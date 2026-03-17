@@ -3,6 +3,8 @@ dist/
 .env
 .env.local
 backend/.env
+backend/app/venv
+app/venv
 __pycache__/
 *.pyc
 *.pkl
