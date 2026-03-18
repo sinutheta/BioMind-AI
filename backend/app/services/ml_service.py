@@ -269,8 +269,16 @@ def predict_chronic(clinical) -> Dict[str, float]:
             if hasattr(heart_model, 'predict_proba'):
                 proba = heart_model.predict_proba(heart_scaled)[0]
                 raw_prob = float(proba[1])
+
+                
                 adjusted_prob = raw_prob ** 0.7
-                final_score = min(adjusted_prob * 100, 85)
+                final_score = adjusted_prob * 100
+
+                
+                final_score = (final_score / 100) * 6
+                final_score = min(final_score, 6.0)
+
+                scores["heart_disease"] = round(final_score, 1)
                 if clinical.age < 30:
                     final_score *= 0.6
 
