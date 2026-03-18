@@ -21,7 +21,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-RF-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.0-FF6600?style=for-the-badge)
-![Claude AI](https://img.shields.io/badge/Claude_AI-Powered-8A2BE2?style=for-the-badge)
+
 
 </div>
 
