@@ -12,20 +12,20 @@ Instantly predicts possible conditions from user-reported symptoms
 ⚙️ Chronic Disease Risk Engine (XGBoost)
 Assesses long-term risks such as heart disease and diabetes
 
-📊 Dynamic Lifestyle Intelligence
+Dynamic Lifestyle Intelligence
 Adjusts risk scores based on:
 Sleep patterns
 Stress levels
 Exercise habits
 Daily lifestyle factors
 
-⚠️ Real-Time Critical Alerts
+ Real-Time Critical Alerts
 Detects high-risk conditions and triggers immediate warnings
 
-💬 AI-Powered Explanations
+AI-Powered Explanations
 Explains results in clear, human-friendly language
 
-🌐 Interactive Dashboard
+ Interactive Dashboard
 Clean and intuitive UI for inputs, predictions, and insights
 
 🧠 Platform Architecture
