@@ -239,21 +239,22 @@ def predict_chronic(clinical) -> Dict[str, float]:
     if heart_model is not None:
         try:
             import pandas as pd
+
             gender_num = 1 if clinical.gender == "male" else 0
-            # Use exact feature names the scaler was trained on
+
             heart_df = pd.DataFrame([{
                 'age':      clinical.age,
                 'sex':      gender_num,
                 'trestbps': clinical.systolic_bp,
                 'chol':     clinical.total_cholesterol,
                 'fbs':      1 if clinical.fasting_glucose > 120 else 0,
-                'thalach':  150,
+                'thalach':  220 - clinical.age,
                 'exang':    0,
-                'oldpeak':  0.0,
+                'oldpeak':  0.5,
                 'ca':       0,
                 'cp_1':     0,
                 'cp_2':     0,
-                'cp_3':     1,
+                'cp_3':     0,
                 'restecg_1': 0,
                 'restecg_2': 0,
                 'slope_1':  1,
@@ -262,13 +263,23 @@ def predict_chronic(clinical) -> Dict[str, float]:
                 'thal_2':   0,
                 'thal_3':   0,
             }])
+
             heart_scaled = scaler_heart.transform(heart_df)
+
             if hasattr(heart_model, 'predict_proba'):
                 proba = heart_model.predict_proba(heart_scaled)[0]
-                scores["heart_disease"] = round(float(proba[1]) * 100, 1)
+                raw_prob = float(proba[1])
+                adjusted_prob = raw_prob ** 0.7
+                final_score = min(adjusted_prob * 100, 85)
+                if clinical.age < 30:
+                    final_score *= 0.6
+
+                scores["heart_disease"] = round(final_score, 1)
+
             else:
                 pred = heart_model.predict(heart_scaled)[0]
                 scores["heart_disease"] = 75.0 if pred == 1 else 20.0
+
         except Exception as e:
             print(f"Heart model error: {e}")
 
@@ -276,6 +287,7 @@ def predict_chronic(clinical) -> Dict[str, float]:
     if sugar_model is not None:
         try:
             import pandas as pd
+
             diab_df = pd.DataFrame([{
                 'Pregnancies':              0,
                 'Glucose':                  clinical.fasting_glucose,
@@ -286,17 +298,20 @@ def predict_chronic(clinical) -> Dict[str, float]:
                 'DiabetesPedigreeFunction': 0.5 if clinical.family_diabetes else 0.1,
                 'Age':                      clinical.age,
             }])
+
             diab_scaled = scaler_diab.transform(diab_df)
+
             if hasattr(sugar_model, 'predict_proba'):
                 proba = sugar_model.predict_proba(diab_scaled)[0]
                 scores["diabetes"] = round(float(proba[1]) * 100, 1)
             else:
                 pred = sugar_model.predict(diab_scaled)[0]
                 scores["diabetes"] = 75.0 if pred == 1 else 20.0
+
         except Exception as e:
             print(f"Diabetes model error: {e}")
 
-    # Fill missing with mock
+    # ── fallback mock values ──────────────────────────────
     mock = _mock_chronic_scores(clinical)
     for key in ["heart_disease", "diabetes", "hypertension"]:
         if key not in scores:
