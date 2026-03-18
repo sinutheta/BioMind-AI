@@ -1,6 +1,6 @@
 🧬 BioMind AI
 
-BioMind AI is a multi-model health intelligence platform built for early disease detection and personalized risk assessment.
+BioMind-AI is a multi-model health intelligence platform built for early disease detection and personalized risk assessment.
 
 It integrates multiple AI systems into a single, interactive platform that analyzes symptoms, evaluates long-term health risks, and adapts predictions based on lifestyle — delivering real-time insights and actionable recommendations.
 
