@@ -1,6 +1,5 @@
 import { ClinicalInput } from '@/types'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 
 export const defaultClinical: ClinicalInput = {
   age: 30, gender: 'male',
