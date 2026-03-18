@@ -256,10 +256,10 @@ def predict_chronic(clinical) -> Dict[str, float]:
                 'cp_3':     0,
                 'restecg_1': 0,
                 'restecg_2': 0,
-                'slope_1':  0,
-                'slope_2':  1,
+                'slope_1':  1,
+                'slope_2':  0,
                 'thal_1':   0,
-                'thal_2':   1,
+                'thal_2':   0,
                 'thal_3':   0,
             }])
             heart_scaled = scaler_heart.transform(heart_df)
