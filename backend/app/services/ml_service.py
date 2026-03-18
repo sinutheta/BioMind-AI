@@ -253,7 +253,7 @@ def predict_chronic(clinical) -> Dict[str, float]:
                 'ca':       0,
                 'cp_1':     0,
                 'cp_2':     0,
-                'cp_3':     0,
+                'cp_3':     1,
                 'restecg_1': 0,
                 'restecg_2': 0,
                 'slope_1':  1,
