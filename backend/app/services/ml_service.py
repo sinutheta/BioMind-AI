@@ -265,7 +265,7 @@ def predict_chronic(clinical) -> Dict[str, float]:
             heart_scaled = scaler_heart.transform(heart_df)
             if hasattr(heart_model, 'predict_proba'):
                 proba = heart_model.predict_proba(heart_scaled)[0]
-                scores["heart_disease"] = round(float(max(proba)) * 100, 1)
+                scores["heart_disease"] = round(float(proba[1]) * 100, 1)
             else:
                 pred = heart_model.predict(heart_scaled)[0]
                 scores["heart_disease"] = 75.0 if pred == 1 else 20.0
@@ -289,7 +289,7 @@ def predict_chronic(clinical) -> Dict[str, float]:
             diab_scaled = scaler_diab.transform(diab_df)
             if hasattr(sugar_model, 'predict_proba'):
                 proba = sugar_model.predict_proba(diab_scaled)[0]
-                scores["diabetes"] = round(float(max(proba)) * 100, 1)
+                scores["diabetes"] = round(float(proba[1]) * 100, 1)
             else:
                 pred = sugar_model.predict(diab_scaled)[0]
                 scores["diabetes"] = 75.0 if pred == 1 else 20.0
