@@ -247,7 +247,7 @@ def predict_chronic(clinical) -> Dict[str, float]:
                 'trestbps': clinical.systolic_bp,
                 'chol':     clinical.total_cholesterol,
                 'fbs':      1 if clinical.fasting_glucose > 120 else 0,
-                'thalach':  220 - clinical.age,  # estimated max heart rate
+                'thalach':  150,
                 'exang':    0,
                 'oldpeak':  0.0,
                 'ca':       0,
