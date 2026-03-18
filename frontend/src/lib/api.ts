@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const VITE_API_URL = "https://biomind-ai.onrender.com" 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export const api = axios.create({
-  baseURL: VITE_API_URL,
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
 })
