@@ -105,7 +105,7 @@ BioMind AI is a **unified, multi-model health risk detection platform** that fus
 │  │              └───────────┬───────────┘                 │   │
 │  │                          ▼                              │   │
 │  │         ┌────────────────────────────────┐             │   │
-│  │         │  Claude AI / GPT-4o Explainer  │             │   │
+│  │         │                Gorq Explainer  │             │   │
 │  │         │  + Red Flag Detector           │             │   │
 │  │         └────────────────────────────────┘             │   │
 │  └─────────────────────────────────────────────────────────┘   │
@@ -161,7 +161,7 @@ Frontend                          Backend
 ⚡  Vite                          🗄️  SQLite via SQLAlchemy
 🎨  Tailwind CSS + shadcn/ui       🔐  JWT Auth (python-jose)
 📊  Recharts (visualisations)      🤖  scikit-learn + XGBoost
-📋  React Hook Form + Zod          🧠  Claude API / GPT-4o
+📋  React Hook Form + Zod          🧠   groq
 🔌  Axios                          🚀  Uvicorn
 ```
 
