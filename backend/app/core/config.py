@@ -4,6 +4,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./biomind.db"
     REDIS_URL: str = "redis://localhost:6379"
     SECRET_KEY: str = "biomind-secret-key-change-in-production"
+    GROQ_API_KEY: str = "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"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     OPENAI_API_KEY: str = ""

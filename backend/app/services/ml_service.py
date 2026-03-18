@@ -235,42 +235,68 @@ def predict_chronic(clinical) -> Dict[str, float]:
     scores = {}
     bmi = clinical.weight_kg / ((clinical.height_cm / 100) ** 2)
 
+    # ── Heart disease model ───────────────────────────────
     if heart_model is not None:
         try:
+            import pandas as pd
             gender_num = 1 if clinical.gender == "male" else 0
-            heart_features = np.array([[
-                clinical.age, gender_num, clinical.systolic_bp,
-                clinical.total_cholesterol, clinical.fasting_glucose,
-                bmi, int(clinical.family_heart_disease),
-            ]])
-            if scaler_heart is not None:
-                heart_features = scaler_heart.transform(heart_features)
+            # Use exact feature names the scaler was trained on
+            heart_df = pd.DataFrame([{
+                'age':      clinical.age,
+                'sex':      gender_num,
+                'trestbps': clinical.systolic_bp,
+                'chol':     clinical.total_cholesterol,
+                'fbs':      1 if clinical.fasting_glucose > 120 else 0,
+                'thalach':  220 - clinical.age,  # estimated max heart rate
+                'exang':    0,
+                'oldpeak':  0.0,
+                'ca':       0,
+                'cp_1':     0,
+                'cp_2':     0,
+                'cp_3':     0,
+                'restecg_1': 0,
+                'restecg_2': 0,
+                'slope_1':  0,
+                'slope_2':  1,
+                'thal_1':   0,
+                'thal_2':   1,
+                'thal_3':   0,
+            }])
+            heart_scaled = scaler_heart.transform(heart_df)
             if hasattr(heart_model, 'predict_proba'):
-                proba = heart_model.predict_proba(heart_features)[0]
+                proba = heart_model.predict_proba(heart_scaled)[0]
                 scores["heart_disease"] = round(float(max(proba)) * 100, 1)
             else:
-                pred = heart_model.predict(heart_features)[0]
+                pred = heart_model.predict(heart_scaled)[0]
                 scores["heart_disease"] = 75.0 if pred == 1 else 20.0
         except Exception as e:
             print(f"Heart model error: {e}")
 
+    # ── Diabetes model ────────────────────────────────────
     if sugar_model is not None:
         try:
-            diab_features = np.array([[
-                clinical.fasting_glucose, bmi, clinical.age,
-                int(clinical.family_diabetes), clinical.systolic_bp,
-            ]])
-            if scaler_diab is not None:
-                diab_features = scaler_diab.transform(diab_features)
+            import pandas as pd
+            diab_df = pd.DataFrame([{
+                'Pregnancies':              0,
+                'Glucose':                  clinical.fasting_glucose,
+                'BloodPressure':            clinical.diastolic_bp,
+                'SkinThickness':            20,
+                'Insulin':                  80,
+                'BMI':                      round(bmi, 1),
+                'DiabetesPedigreeFunction': 0.5 if clinical.family_diabetes else 0.1,
+                'Age':                      clinical.age,
+            }])
+            diab_scaled = scaler_diab.transform(diab_df)
             if hasattr(sugar_model, 'predict_proba'):
-                proba = sugar_model.predict_proba(diab_features)[0]
+                proba = sugar_model.predict_proba(diab_scaled)[0]
                 scores["diabetes"] = round(float(max(proba)) * 100, 1)
             else:
-                pred = sugar_model.predict(diab_features)[0]
+                pred = sugar_model.predict(diab_scaled)[0]
                 scores["diabetes"] = 75.0 if pred == 1 else 20.0
         except Exception as e:
             print(f"Diabetes model error: {e}")
 
+    # Fill missing with mock
     mock = _mock_chronic_scores(clinical)
     for key in ["heart_disease", "diabetes", "hypertension"]:
         if key not in scores:

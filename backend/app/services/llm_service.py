@@ -1,5 +1,6 @@
 import json
 import httpx
+from groq import Groq
 from app.core.config import settings
 
 def build_prompt(request, final_scores, lifestyle, red_flags) -> str:
@@ -29,7 +30,9 @@ LIFESTYLE MODIFIER: {lifestyle.modifier}x
 Risk factors: {lifestyle_factors_text}
 Protective factors: {protective_text}
 
-Write a warm 3-4 sentence summary, then give exactly 3 specific recommendations and 2-3 doctor warning signs.
+Write a warm 5-6 sentence summary covering the patient's overall health status, key risk factors, and how their lifestyle is impacting their health.
+Then give exactly 3 detailed recommendations — each recommendation should be 2-3 sentences long explaining what to do, why it matters, and how it helps their specific condition.
+Also give 2-3 doctor warning signs, each with a brief explanation of why it is serious.
 Respond ONLY in this exact JSON format:
 {{
   "explanation": "...",
@@ -37,9 +40,11 @@ Respond ONLY in this exact JSON format:
   "see_doctor_if": ["...", "...", "..."]
 }}"""
 
+
 async def get_llm_explanation(request, final_scores, lifestyle, red_flags):
     prompt = build_prompt(request, final_scores, lifestyle, red_flags)
 
+    # ── Option 1: Claude ─────────────────────────────────────────
     if settings.ANTHROPIC_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -64,6 +69,7 @@ async def get_llm_explanation(request, final_scores, lifestyle, red_flags):
         except Exception as e:
             print(f"Claude API error: {e}")
 
+    # ── Option 2: OpenAI ─────────────────────────────────────────
     if settings.OPENAI_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -88,7 +94,35 @@ async def get_llm_explanation(request, final_scores, lifestyle, red_flags):
         except Exception as e:
             print(f"OpenAI API error: {e}")
 
+    # ── Option 3: Groq (FREE) ────────────────────────────────────
+    if settings.GROQ_API_KEY:
+        try:
+            groq_client = Groq(api_key=settings.GROQ_API_KEY)
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are BioMind AI. Respond with valid JSON only. No extra text."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                max_tokens=700,
+                temperature=0.3
+            )
+            text = response.choices[0].message.content
+            text = text.replace("```json", "").replace("```", "").strip()
+            parsed = json.loads(text)
+            return parsed["explanation"], parsed["recommendations"], parsed["see_doctor_if"]
+        except Exception as e:
+            print(f"Groq API error: {e}")
+
+    # ── Fallback: no API key ─────────────────────────────────────
     return _fallback_explanation(request, final_scores, lifestyle)
+
 
 def _fallback_explanation(request, final_scores, lifestyle):
     top = max(final_scores.items(), key=lambda x: x[1]["score"])
